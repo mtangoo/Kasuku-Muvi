@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Kasuku Muvi</string>
+    <string name="search_hint">Search Movies</string>
+    <string name="title_activity_search_movies">SearchMoviesActivity</string>
+    <string name="dismiss_btn">Dismiss</string>
+    <string name="title_activity_movie_details">MovieDetailsActivity</string>
+    <string name="error_occured">An error occured</string>
+    <string name="network_error">Network problem. Try again</string>
+</resources>

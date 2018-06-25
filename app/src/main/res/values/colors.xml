@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#F44336</color>
+    <color name="colorPrimaryDark">#B71C1C</color>
+    <color name="colorAccent">#FF1744</color>
+    <color name="colorPrimaryText">#212121</color>
+    <color name="colorSecondaryText">#757575</color>
+    <color name="colorIcons">#FFEBEE</color>
+    <color name="colorDivider">#FFCDD2</color>
+    <!-- Ticket list colors -->
+    <color name="date">#999999</color>
+    <color name="title">#222222</color>
+    <color name="black">#000000</color>
+    <color name="white">#ffffff</color>
+    <color name="year">#999999</color>
+</resources>
