@@ -63,13 +63,17 @@ public class MovieDetailsActivity extends AppCompatActivity {
 
 
         MovieViewModel vm = ViewModelProviders.of(this).get(MovieViewModel.class);
-        vm.getMovie().observe(this, new Observer<ResponseDataSingle>() {
+        vm.getMovieData().observe(this, new Observer<Movie>() {
             @Override
-            public void onChanged(@Nullable ResponseDataSingle data) {
-                if(data.getStatus() == Status.SUCCESS)
-                    updateMovieDetails(data.getData());
-                else
-                    updateError(data.getError());
+            public void onChanged(@Nullable Movie data) {
+                updateMovieDetails(data);
+            }
+        });
+
+        vm.getMovieError().observe(this, new Observer<Throwable>() {
+            @Override
+            public void onChanged(@Nullable Throwable error) {
+                updateError(error);
             }
         });
 

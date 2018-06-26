@@ -19,10 +19,10 @@ import tz.co.hosannahighertech.kasukumuvi.data.models.MovieResponse;
 
 public interface Api {
     @GET("/3/movie/popular")
-    Observable<MovieResponse> getPopular();
+    Single<MovieResponse> getPopular();
 
     @GET("/3/search/movie")
-    Flowable<MovieResponse> searchMovies(@Query("query") String query);
+    Single<MovieResponse> searchMovies(@Query("query") String query);
 
     @GET("/3/movie/{movie_id}")
     Single<Movie> getMovie(@Path("movie_id") int id);

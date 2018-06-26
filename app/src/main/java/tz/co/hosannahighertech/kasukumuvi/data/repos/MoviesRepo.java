@@ -1,11 +1,18 @@
 package tz.co.hosannahighertech.kasukumuvi.data.repos;
 
+import android.util.Log;
+
+import org.reactivestreams.Publisher;
+
 import java.util.List;
 
 import io.reactivex.Flowable;
 import io.reactivex.Single;
 import io.reactivex.functions.Function;
+import tz.co.hosannahighertech.kasukumuvi.data.api.Api;
+import tz.co.hosannahighertech.kasukumuvi.data.models.MovieResponse;
 import tz.co.hosannahighertech.kasukumuvi.data.models.db.Movie;
+import tz.co.hosannahighertech.kasukumuvi.data.models.db.MovieDao;
 
 /**
  * @package tz.co.hosannahighertech.kasukumuvi.data.repos
@@ -18,15 +25,15 @@ import tz.co.hosannahighertech.kasukumuvi.data.models.db.Movie;
 public class MoviesRepo {
     private static volatile MoviesRepo INSTANCE;
 
-    private MovieDataSource mLocal;
-    private MovieDataSource mRemote;
+    private MovieDao mLocal;
+    private Api mRemote;
 
-    private MoviesRepo(MovieDataSource local, MovieDataSource remote) {
+    private MoviesRepo(MovieDao local, Api remote) {
         mLocal = local;
         mRemote = remote;
     }
 
-    public static MoviesRepo getInstance(MovieDataSource local, MovieDataSource remote) {
+    public static MoviesRepo getInstance(MovieDao local, Api remote) {
         if (INSTANCE == null) {
             synchronized (MoviesRepo.class) {
                 if (INSTANCE == null) {
@@ -38,25 +45,36 @@ public class MoviesRepo {
     }
 
     public Flowable<List<Movie>> getMovies() {
-        return mLocal.allMovies().take(1)
+        return mLocal.getMovies()
+                .take(1)
                 .filter(list -> !list.isEmpty())
-                .switchIfEmpty(mRemote.allMovies()
-                        .doOnNext(data -> mLocal.saveAll(data))
-                );
+                .switchIfEmpty(mRemote.getPopular()
+                        .doOnSuccess(data -> {
+                            for (Movie m : data.getResults())
+                                mLocal.insertMovie(m);
+                        })
+                        .map(movieResponse -> movieResponse.getResults())
+                        .toFlowable());
     }
 
     public Flowable<Movie> getMovie(final int id) {
-        //return mLocal.getMovie(id).toMaybe().switchIfEmpty(mRemote.getMovie(id));
-        return Single.concatArray(mLocal.getMovie(id), mRemote.getMovie(id).doOnSuccess(data -> {
-            mLocal.save(data);
-        })).onErrorResumeNext(error->{
-            return mLocal.getMovie(id).toFlowable();
+        return Single.concat(mLocal.getMovie(id), mRemote.getMovie(id).doOnSuccess(data -> {
+            mLocal.insertMovie(data);
+        })).onErrorResumeNext(error -> {
+            return Flowable.error(error);
         });
     }
 
     public Flowable<List<Movie>> search(String query) {
-        return mLocal.searchMovies(query).take(1)
+        return mLocal.searchMovies("%"+query+"%").take(1)
                 .filter(list -> !list.isEmpty())
-                .switchIfEmpty(mRemote.searchMovies(query).doOnNext(data -> mLocal.saveAll(data)));
+                .switchIfEmpty(mRemote.searchMovies(query)
+                        .map(movieResponse -> {
+                            for (Movie m : movieResponse.getResults())
+                                mLocal.insertMovie(m);
+
+                            return movieResponse.getResults();
+                        })
+                        .toFlowable()).onErrorResumeNext((Function<Throwable, Publisher<? extends List<Movie>>>) Flowable::error);
     }
 }
