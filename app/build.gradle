@@ -36,6 +36,7 @@ dependencies {
     def httplogger_version = "3.10.0"
     def picasso_version = "2.71828"
     def butterknife_version = "8.8.1"
+    def dagger_version = "2.16"
 
     // ViewModel and LiveData
     implementation "android.arch.lifecycle:extensions:$lifecycle_version"
@@ -81,6 +82,9 @@ dependencies {
     implementation "com.android.support:design:$support_version"
     implementation "com.android.support:appcompat-v7:$support_version"
     implementation 'com.android.support.constraint:constraint-layout:1.1.2'
+
+    compile "com.google.dagger:dagger:$dagger_version"
+    annotationProcessor "com.google.dagger:dagger-compiler:$dagger_version"
 
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'

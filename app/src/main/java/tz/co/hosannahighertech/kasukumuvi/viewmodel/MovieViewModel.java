@@ -2,19 +2,22 @@ package tz.co.hosannahighertech.kasukumuvi.viewmodel;
 
 import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
-import android.arch.lifecycle.MediatorLiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.support.annotation.NonNull;
+
+import javax.inject.Inject;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
-import tz.co.hosannahighertech.kasukumuvi.data.api.WebService;
 import tz.co.hosannahighertech.kasukumuvi.data.models.db.DatabaseManager;
 import tz.co.hosannahighertech.kasukumuvi.data.models.db.Movie;
 import tz.co.hosannahighertech.kasukumuvi.data.models.db.MovieDao;
 import tz.co.hosannahighertech.kasukumuvi.data.repos.MoviesRepo;
+import tz.co.hosannahighertech.kasukumuvi.injection.components.DaggerRepositoryComponent;
+import tz.co.hosannahighertech.kasukumuvi.injection.modules.DatabaseModule;
+import tz.co.hosannahighertech.kasukumuvi.injection.modules.NetworkModule;
 
 /**
  * @package tz.co.hosannahighertech.kasukumuvi.viewmodel
@@ -25,7 +28,9 @@ import tz.co.hosannahighertech.kasukumuvi.data.repos.MoviesRepo;
  */
 
 public class MovieViewModel extends AndroidViewModel {
-    private MoviesRepo mRepo;
+    @Inject
+    public MoviesRepo mRepo;
+
     private CompositeDisposable mDisposables = new CompositeDisposable();
     private MutableLiveData<ResponseDataList> mMoviesListData = new MutableLiveData<>();
 
@@ -36,18 +41,18 @@ public class MovieViewModel extends AndroidViewModel {
     public MovieViewModel(@NonNull Application application) {
         super(application);
 
-        MovieDao movieDao = DatabaseManager.getInstance(application.getApplicationContext()).movieDao();
-        mRepo = MoviesRepo.getInstance(movieDao, WebService.getApi());
+        DaggerRepositoryComponent.builder()
+                .databaseModule(new DatabaseModule(application.getApplicationContext()))
+                .build()
+                .inject(this);
     }
 
-    public MutableLiveData<ResponseDataList> getMovies()
-    {
+    public MutableLiveData<ResponseDataList> getMovies() {
         return mMoviesListData;
     }
 
 
-    public void loadData()
-    {
+    public void loadData() {
         Disposable d = mRepo.getMovies()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -86,7 +91,7 @@ public class MovieViewModel extends AndroidViewModel {
                         },
                         error -> {
                             //onError
-                            //mMoviesListData.postValue(new ResponseDataList().setStatus(Status.ERROR).setError(error));
+                            mMoviesListData.postValue(new ResponseDataList().setStatus(Status.ERROR).setError(error));
                         },
                         () -> {
                             //onComplete
@@ -97,18 +102,15 @@ public class MovieViewModel extends AndroidViewModel {
 
     }
 
-    public MutableLiveData<Movie> getMovieData()
-    {
-        return  mOneMovieData;
+    public MutableLiveData<Movie> getMovieData() {
+        return mOneMovieData;
     }
 
-    public MutableLiveData<Throwable> getMovieError()
-    {
-        return  mOneMovieError;
+    public MutableLiveData<Throwable> getMovieError() {
+        return mOneMovieError;
     }
 
-    public void loadMovie(int id)
-    {
+    public void loadMovie(int id) {
         Disposable d = mRepo.getMovie(id)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread(), true)

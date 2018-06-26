@@ -6,6 +6,8 @@ import org.reactivestreams.Publisher;
 
 import java.util.List;
 
+import javax.inject.Inject;
+
 import io.reactivex.Flowable;
 import io.reactivex.Single;
 import io.reactivex.functions.Function;
@@ -23,26 +25,16 @@ import tz.co.hosannahighertech.kasukumuvi.data.models.db.MovieDao;
  */
 
 public class MoviesRepo {
-    private static volatile MoviesRepo INSTANCE;
 
     private MovieDao mLocal;
     private Api mRemote;
 
-    private MoviesRepo(MovieDao local, Api remote) {
+    @Inject
+    MoviesRepo(MovieDao local, Api remote) {
         mLocal = local;
         mRemote = remote;
     }
 
-    public static MoviesRepo getInstance(MovieDao local, Api remote) {
-        if (INSTANCE == null) {
-            synchronized (MoviesRepo.class) {
-                if (INSTANCE == null) {
-                    INSTANCE = new MoviesRepo(local, remote);
-                }
-            }
-        }
-        return INSTANCE;
-    }
 
     public Flowable<List<Movie>> getMovies() {
         return mLocal.getMovies()
