@@ -7,6 +7,7 @@ import javax.inject.Inject;
 
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
+import io.reactivex.Observable;
 import io.reactivex.Single;
 import tz.co.hosannahighertech.kasukumuvi.data.api.Api;
 import tz.co.hosannahighertech.kasukumuvi.data.models.db.Movie;
@@ -65,4 +66,7 @@ public class MoviesRepo {
         });
     }
 
+    public Single<Integer> clearDatabase() {
+        return Observable.fromCallable(() -> mLocal.deleteAll()).firstOrError();
+    }
 }

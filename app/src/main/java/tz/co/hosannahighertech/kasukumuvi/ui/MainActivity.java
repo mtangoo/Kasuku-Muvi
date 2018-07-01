@@ -44,8 +44,8 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.container)
     ConstraintLayout mContainerLayout;
 
-    @BindView(R.id.refresh)
-    FloatingActionButton mRefresh;
+    @BindView(R.id.delete)
+    FloatingActionButton mDelete;
 
     @BindView(R.id.progressbar)
     ProgressBar mProgressBar;
@@ -82,8 +82,8 @@ public class MainActivity extends AppCompatActivity {
 
         viewModel.loadData();
 
-        RxView.clicks(mRefresh).subscribe(aVoid->{
-            ViewModelProviders.of(this).get(MovieViewModel.class).loadData();
+        RxView.clicks(mDelete).subscribe(aVoid -> {
+            ViewModelProviders.of(this).get(MovieViewModel.class).clearDatabase();
         });
     }
 

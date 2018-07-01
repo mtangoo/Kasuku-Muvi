@@ -27,7 +27,7 @@ public interface MovieDao {
     @Query("SELECT * FROM movies WHERE id = :movieId")
     public Single<Movie> getMovie(int movieId);
 
-    @Query("SELECT * FROM movies WHERE title ILIKE :title ORDER BY title ASC")
+    @Query("SELECT * FROM movies WHERE title LIKE :title ORDER BY title ASC")
     public DataSource.Factory<Integer, Movie> searchMovies(String title);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -39,6 +39,6 @@ public interface MovieDao {
     @Delete
     public void delete(Movie entity);
 
-    @Delete
-    public void deleteMultiple(Movie... entities);
+    @Query("DELETE FROM movies")
+    public int deleteAll();
 }

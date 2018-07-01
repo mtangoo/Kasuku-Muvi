@@ -4,6 +4,7 @@ import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.MutableLiveData;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import javax.inject.Inject;
 
@@ -137,10 +138,22 @@ public class MovieViewModel extends AndroidViewModel {
                 );
     }
 
+    public void clearDatabase() {
+        mRepo.clearDatabase()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(data -> {
+                    Log.d("KASUKU_MUVI", "Deleted Rows:" + data);
+                }, throwable -> {
+                    Log.d("KASUKU_MUVI", throwable.getMessage());
+                });
+    }
+
     @Override
     protected void onCleared() {
         super.onCleared();
 
         disposeDisposable();
     }
+
 }
