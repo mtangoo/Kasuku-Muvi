@@ -2,8 +2,6 @@ package tz.co.hosannahighertech.kasukumuvi.injection.modules;
 
 import java.util.concurrent.TimeUnit;
 
-import javax.inject.Inject;
-
 import dagger.Module;
 import dagger.Provides;
 import okhttp3.Interceptor;
@@ -32,12 +30,12 @@ public class NetworkModule {
     OkHttpClient provideHttpClient(Settings settings, EmbedApiKeyInterceptor keyInterceptor)
     {
         OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
+        httpClient.readTimeout(settings.getTimeout(), TimeUnit.MILLISECONDS);
+        httpClient.writeTimeout(settings.getTimeout(), TimeUnit.MILLISECONDS);
 
         HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
         logging.setLevel(HttpLoggingInterceptor.Level.BODY);
         httpClient.addInterceptor(logging);
-        httpClient.readTimeout(settings.getTimeout(), TimeUnit.MILLISECONDS);
-        httpClient.writeTimeout(settings.getTimeout(), TimeUnit.MILLISECONDS);
 
         httpClient.addInterceptor(keyInterceptor);
 

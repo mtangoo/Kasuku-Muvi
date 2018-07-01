@@ -28,11 +28,10 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import tz.co.hosannahighertech.kasukumuvi.R;
 import tz.co.hosannahighertech.kasukumuvi.data.adapters.MoviesAdapter;
-import tz.co.hosannahighertech.kasukumuvi.data.models.db.Movie;
 import tz.co.hosannahighertech.kasukumuvi.ui.interfaces.ClickListener;
-import tz.co.hosannahighertech.kasukumuvi.viewmodel.MovieViewModel;
-import tz.co.hosannahighertech.kasukumuvi.viewmodel.ResponseDataList;
-import tz.co.hosannahighertech.kasukumuvi.viewmodel.Status;
+import tz.co.hosannahighertech.kasukumuvi.ui.viewmodel.MovieViewModel;
+import tz.co.hosannahighertech.kasukumuvi.ui.viewmodel.ResponseDataList;
+import tz.co.hosannahighertech.kasukumuvi.ui.viewmodel.Status;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -75,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
                     updateUi(resp.getStatus());
                 }
                 else {
-                    mAdapter.update(resp.getData());
+                    mAdapter.submitList(resp.getData());
                     updateUi(resp.getStatus());
                 }
             }
@@ -106,11 +105,11 @@ public class MainActivity extends AppCompatActivity {
         mMoviesList.addOnItemTouchListener(new MovieTouchListerner(this, mMoviesList, new ClickListener() {
             @Override
             public void onClick(View view, int position) {
-                Movie m = mAdapter.getMovie(position);
-                if(m!=null)
+                int id = mAdapter.getMovieId(position);
+                if (id > 0)
                 {
                     Intent intent = new Intent(MainActivity.this, MovieDetailsActivity.class);
-                    intent.putExtra("MOVIE_ID", m.id);
+                    intent.putExtra("MOVIE_ID", id);
                     startActivity(intent);
                 }
             }
@@ -169,7 +168,7 @@ public class MainActivity extends AppCompatActivity {
                     if(searchText.toString().isEmpty())
                         viewModel.loadData();
                     else
-                        viewModel.search(searchText.toString());
+                        viewModel.search(searchText.toString().trim());
 
                 });
 

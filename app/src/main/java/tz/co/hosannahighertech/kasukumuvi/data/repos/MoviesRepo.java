@@ -1,18 +1,14 @@
 package tz.co.hosannahighertech.kasukumuvi.data.repos;
 
-import android.util.Log;
-
-import org.reactivestreams.Publisher;
-
-import java.util.List;
+import android.arch.paging.PagedList;
+import android.arch.paging.RxPagedListBuilder;
 
 import javax.inject.Inject;
 
+import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.Single;
-import io.reactivex.functions.Function;
 import tz.co.hosannahighertech.kasukumuvi.data.api.Api;
-import tz.co.hosannahighertech.kasukumuvi.data.models.MovieResponse;
 import tz.co.hosannahighertech.kasukumuvi.data.models.db.Movie;
 import tz.co.hosannahighertech.kasukumuvi.data.models.db.MovieDao;
 
@@ -28,25 +24,37 @@ public class MoviesRepo {
 
     private MovieDao mLocal;
     private Api mRemote;
+    private ListBoundaryCallback mListBoundaryCallback;
+    private SearchBoundaryCallback mSearchCallback;
+
+    private static PagedList.Config mConfig =
+            new PagedList.Config.Builder()
+                    .setEnablePlaceholders(true)
+                    .setPrefetchDistance(5)
+                    .setPageSize(20).build();
+
 
     @Inject
-    MoviesRepo(MovieDao local, Api remote) {
+    MoviesRepo(MovieDao local, Api remote, ListBoundaryCallback listCallback, SearchBoundaryCallback searchCallback) {
         mLocal = local;
         mRemote = remote;
+
+        mListBoundaryCallback = listCallback;
+        mSearchCallback = searchCallback;
     }
 
 
-    public Flowable<List<Movie>> getMovies() {
-        return mLocal.getMovies()
-                .take(1)
-                .filter(list -> !list.isEmpty())
-                .switchIfEmpty(mRemote.getPopular()
-                        .doOnSuccess(data -> {
-                            for (Movie m : data.getResults())
-                                mLocal.insertMovie(m);
-                        })
-                        .map(movieResponse -> movieResponse.getResults())
-                        .toFlowable());
+    public Flowable<PagedList<Movie>> getMovies() {
+        return new RxPagedListBuilder<>(mLocal.getMovies(), mConfig)
+                .setBoundaryCallback(mListBoundaryCallback)
+                .buildFlowable(BackpressureStrategy.LATEST);
+    }
+
+    public Flowable<PagedList<Movie>> search(String query) {
+        String q = "%" + query + "%";
+        return new RxPagedListBuilder<>(mLocal.searchMovies(q), mConfig)
+                .setBoundaryCallback(mSearchCallback.setSearchWord(query))
+                .buildFlowable(BackpressureStrategy.LATEST);
     }
 
     public Flowable<Movie> getMovie(final int id) {
@@ -57,16 +65,4 @@ public class MoviesRepo {
         });
     }
 
-    public Flowable<List<Movie>> search(String query) {
-        return mLocal.searchMovies("%"+query+"%").take(1)
-                .filter(list -> !list.isEmpty())
-                .switchIfEmpty(mRemote.searchMovies(query)
-                        .map(movieResponse -> {
-                            for (Movie m : movieResponse.getResults())
-                                mLocal.insertMovie(m);
-
-                            return movieResponse.getResults();
-                        })
-                        .toFlowable()).onErrorResumeNext((Function<Throwable, Publisher<? extends List<Movie>>>) Flowable::error);
-    }
 }

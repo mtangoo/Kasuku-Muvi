@@ -95,6 +95,20 @@ public class Movie {
     public int voteCount;
 
 
+    /* Since it is not easier to get Movie metadata like Page for this movie in popular API, so we will set
+    *  a variable here as a shortcut
+    */
+    @Ignore
+    int requestPage = 1;
+
+    public int getRequestPage() {
+        return requestPage;
+    }
+
+    public void setRequestPage(int requestPage) {
+        this.requestPage = requestPage;
+    }
+
     public void setAdult(boolean adult) {
         this.adult = adult;
     }

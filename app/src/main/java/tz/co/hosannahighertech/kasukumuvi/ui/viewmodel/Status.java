@@ -1,4 +1,4 @@
-package tz.co.hosannahighertech.kasukumuvi.viewmodel;
+package tz.co.hosannahighertech.kasukumuvi.ui.viewmodel;
 
 /**
  * @package tz.co.hosannahighertech.kasukumuvi.viewmodel

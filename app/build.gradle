@@ -29,6 +29,7 @@ dependencies {
     def support_version = "27.1.1"
     def lifecycle_version = "1.1.1"
     def room_version = "1.1.1"
+    def paging_version = "1.0.1"
     def rxandroid_version = "2.0.2"
     def rxjava_version = "2.1.14"
     def rxbinding_version = "2.1.1"
@@ -48,6 +49,9 @@ dependencies {
     annotationProcessor "android.arch.persistence.room:compiler:$room_version"
     //RxJava support for Room
     implementation "android.arch.persistence.room:rxjava2:$room_version"
+
+    implementation "android.arch.paging:runtime:$paging_version"
+    implementation "android.arch.paging:rxjava2:$paging_version"
 
     //RxJava
     implementation "io.reactivex.rxjava2:rxandroid:$rxandroid_version"

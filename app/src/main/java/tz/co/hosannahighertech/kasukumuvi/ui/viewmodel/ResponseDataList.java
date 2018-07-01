@@ -1,21 +1,21 @@
-package tz.co.hosannahighertech.kasukumuvi.viewmodel;
+package tz.co.hosannahighertech.kasukumuvi.ui.viewmodel;
 
-import java.util.List;
+import android.arch.paging.PagedList;
 
 import tz.co.hosannahighertech.kasukumuvi.data.models.db.Movie;
 
 /**
- * @package tz.co.hosannahighertech.kasukumuvi.viewmodel
+ * @package tz.co.hosannahighertech.kasukumuvi.data.models
  * Created by Stefano D. Mtangoo <stefano@hosannahighertech.co.tz> on
- * Created at 23/06/2018 18:39.
+ * Created at 13/06/2018 17:53.
  * Copyright (c) 2018, Hosanna Higher Technologies Co. Ltd
  * This Code is Provided under Hosanna HTCL Licensing Conditions.
  */
 
 
-public class ResponseDataSingle {
+public class ResponseDataList {
 
-    private Movie mData;
+    private PagedList<Movie> mData;
     private Throwable mError;
     private Status mStatus;
 
@@ -23,7 +23,7 @@ public class ResponseDataSingle {
         return mStatus;
     }
 
-    public Movie getData() {
+    public PagedList<Movie> getData() {
         return mData;
     }
 
@@ -32,17 +32,17 @@ public class ResponseDataSingle {
         return mError;
     }
 
-    public ResponseDataSingle setData(Movie data) {
+    public ResponseDataList setData(PagedList<Movie> data) {
         mData = data;
         return this;
     }
 
-    public ResponseDataSingle setError(Throwable error) {
+    public ResponseDataList setError(Throwable error) {
         mError = error;
         return this;
     }
 
-    public ResponseDataSingle setStatus(Status status) {
+    public ResponseDataList setStatus(Status status) {
         mStatus = status;
         return  this;
     }

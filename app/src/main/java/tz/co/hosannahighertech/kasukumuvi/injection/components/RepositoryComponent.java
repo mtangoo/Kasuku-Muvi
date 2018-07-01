@@ -6,7 +6,7 @@ import tz.co.hosannahighertech.kasukumuvi.injection.modules.AppContextModule;
 import tz.co.hosannahighertech.kasukumuvi.injection.modules.DatabaseModule;
 import tz.co.hosannahighertech.kasukumuvi.injection.modules.NetworkModule;
 import tz.co.hosannahighertech.kasukumuvi.injection.scopes.MovieApplicationScope;
-import tz.co.hosannahighertech.kasukumuvi.viewmodel.MovieViewModel;
+import tz.co.hosannahighertech.kasukumuvi.ui.viewmodel.MovieViewModel;
 
 /**
  * @package tz.co.hosannahighertech.kasukumuvi.injection.components

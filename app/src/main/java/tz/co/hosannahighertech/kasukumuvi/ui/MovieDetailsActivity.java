@@ -21,9 +21,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import tz.co.hosannahighertech.kasukumuvi.R;
 import tz.co.hosannahighertech.kasukumuvi.data.models.db.Movie;
-import tz.co.hosannahighertech.kasukumuvi.viewmodel.MovieViewModel;
-import tz.co.hosannahighertech.kasukumuvi.viewmodel.ResponseDataSingle;
-import tz.co.hosannahighertech.kasukumuvi.viewmodel.Status;
+import tz.co.hosannahighertech.kasukumuvi.ui.viewmodel.MovieViewModel;
 
 public class MovieDetailsActivity extends AppCompatActivity {
 

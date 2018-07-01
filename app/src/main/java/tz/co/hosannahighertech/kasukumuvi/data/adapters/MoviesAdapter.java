@@ -1,6 +1,8 @@
 package tz.co.hosannahighertech.kasukumuvi.data.adapters;
 
+import android.arch.paging.PagedListAdapter;
 import android.support.annotation.NonNull;
+import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,9 +12,6 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -27,21 +26,21 @@ import tz.co.hosannahighertech.kasukumuvi.data.models.db.Movie;
  * This Code is Provided under Hosanna HTCL Licensing Conditions.
  */
 
-public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesViewHolder> {
+public class MoviesAdapter extends PagedListAdapter<Movie, MoviesAdapter.MoviesViewHolder> {
+    public static final DiffUtil.ItemCallback<Movie> DIFF_CALLBACK = new DiffUtil.ItemCallback<Movie>() {
+        @Override
+        public boolean areItemsTheSame(Movie oldItem, Movie newItem) {
+            return oldItem.title == newItem.title && oldItem.releaseDate == newItem.releaseDate;
+        }
 
-    List<Movie> mMovieList;
+        @Override
+        public boolean areContentsTheSame(Movie oldItem, Movie newItem) {
+            return oldItem.overview == newItem.overview;
+        }
+    };
 
     public MoviesAdapter() {
-        mMovieList = new ArrayList<>();
-    }
-
-    public MoviesAdapter(List<Movie> movieList) {
-        mMovieList = movieList;
-    }
-
-    public void update(List<Movie> movieList) {
-        mMovieList = movieList;
-        notifyDataSetChanged();
+        super(DIFF_CALLBACK);
     }
 
     @NonNull
@@ -54,7 +53,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesView
 
     @Override
     public void onBindViewHolder(@NonNull MoviesViewHolder holder, int position) {
-        Movie movie = mMovieList.get(position);
+        Movie movie = getItem(position);
         if(movie!=null)
         {
             holder.getTitle().setText(movie.title);
@@ -65,18 +64,21 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesView
             String imageUrl = "https://image.tmdb.org/t/p/w200/"+movie.backdropPath;
             Picasso.get().load(imageUrl).resize(150, 130).centerCrop().into(holder.getPreview());
         }
+        else {
+            holder.getTitle().setText("");
+            holder.getRelease().setText("");
+            holder.getVoteCount().setText("");
+            holder.getRatings().setRating(0);
+            holder.getPreview().setImageBitmap(null);
+        }
     }
 
-    @Override
-    public int getItemCount() {
-        return mMovieList.size();
-    }
+    public int getMovieId(int position) {
+        Movie movie = getItem(position);
+        if (movie != null)
+            return movie.id;
 
-    public Movie getMovie(int pos) {
-        if(mMovieList.size()>pos)
-            return  mMovieList.get(pos);
-        else
-            return  null;
+        return -1;
     }
 
     //Viewholder

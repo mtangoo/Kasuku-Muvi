@@ -1,5 +1,6 @@
 package tz.co.hosannahighertech.kasukumuvi.data.models.db;
 
+import android.arch.paging.DataSource;
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Delete;
 import android.arch.persistence.room.Insert;
@@ -8,7 +9,6 @@ import android.arch.persistence.room.Query;
 
 import java.util.List;
 
-import io.reactivex.Flowable;
 import io.reactivex.Single;
 
 /**
@@ -21,20 +21,20 @@ import io.reactivex.Single;
 
 @Dao
 public interface MovieDao {
-    @Query("SELECT * FROM movies")
-    public Flowable<List<Movie>> getMovies();
+    @Query("SELECT * FROM movies WHERE adult = 0 ORDER BY title ASC")
+    public DataSource.Factory<Integer, Movie> getMovies();
 
     @Query("SELECT * FROM movies WHERE id = :movieId")
     public Single<Movie> getMovie(int movieId);
 
-    @Query("SELECT * FROM movies WHERE title LIKE :title")
-    public Flowable<List<Movie>> searchMovies(String title);
+    @Query("SELECT * FROM movies WHERE title ILIKE :title ORDER BY title ASC")
+    public DataSource.Factory<Integer, Movie> searchMovies(String title);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertMovie(Movie entity);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insertMovies(Movie... entities);
+    void insertMovies(List<Movie> entities);
 
     @Delete
     public void delete(Movie entity);

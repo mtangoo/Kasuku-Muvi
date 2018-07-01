@@ -1,4 +1,4 @@
-package tz.co.hosannahighertech.kasukumuvi.viewmodel;
+package tz.co.hosannahighertech.kasukumuvi.ui.viewmodel;
 
 import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
@@ -8,16 +8,13 @@ import android.support.annotation.NonNull;
 import javax.inject.Inject;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
-import tz.co.hosannahighertech.kasukumuvi.data.models.db.DatabaseManager;
 import tz.co.hosannahighertech.kasukumuvi.data.models.db.Movie;
-import tz.co.hosannahighertech.kasukumuvi.data.models.db.MovieDao;
 import tz.co.hosannahighertech.kasukumuvi.data.repos.MoviesRepo;
 import tz.co.hosannahighertech.kasukumuvi.injection.components.DaggerRepositoryComponent;
+import tz.co.hosannahighertech.kasukumuvi.injection.modules.AppContextModule;
 import tz.co.hosannahighertech.kasukumuvi.injection.modules.DatabaseModule;
-import tz.co.hosannahighertech.kasukumuvi.injection.modules.NetworkModule;
 
 /**
  * @package tz.co.hosannahighertech.kasukumuvi.viewmodel
@@ -31,18 +28,19 @@ public class MovieViewModel extends AndroidViewModel {
     @Inject
     public MoviesRepo mRepo;
 
-    private CompositeDisposable mDisposables = new CompositeDisposable();
     private MutableLiveData<ResponseDataList> mMoviesListData = new MutableLiveData<>();
 
     //for single movie -- Error and data comes so fast that one LiveData object cannot correctly publish them
     private MutableLiveData<Movie> mOneMovieData = new MutableLiveData<>();
     private MutableLiveData<Throwable> mOneMovieError = new MutableLiveData<>();
+    private Disposable mDisposable;
 
     public MovieViewModel(@NonNull Application application) {
         super(application);
 
         DaggerRepositoryComponent.builder()
                 .databaseModule(new DatabaseModule(application.getApplicationContext()))
+                .appContextModule(new AppContextModule(application.getApplicationContext()))
                 .build()
                 .inject(this);
     }
@@ -53,7 +51,9 @@ public class MovieViewModel extends AndroidViewModel {
 
 
     public void loadData() {
-        Disposable d = mRepo.getMovies()
+        disposeDisposable();
+
+        mDisposable = mRepo.getMovies()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnSubscribe(subscription -> {
@@ -72,13 +72,18 @@ public class MovieViewModel extends AndroidViewModel {
                             //onComplete
                         }
                 );
+    }
 
-        mDisposables.add(d);
+    private void disposeDisposable() {
+        if (mDisposable != null && !mDisposable.isDisposed())
+            mDisposable.dispose();
     }
 
 
     public void search(String query) {
-        Disposable d = mRepo.search(query)
+        disposeDisposable();
+
+        mDisposable = mRepo.search(query)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnSubscribe(subscription -> {
@@ -97,8 +102,6 @@ public class MovieViewModel extends AndroidViewModel {
                             //onComplete
                         }
                 );
-
-        mDisposables.add(d);
 
     }
 
@@ -111,7 +114,9 @@ public class MovieViewModel extends AndroidViewModel {
     }
 
     public void loadMovie(int id) {
-        Disposable d = mRepo.getMovie(id)
+        disposeDisposable();
+
+        mDisposable = mRepo.getMovie(id)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread(), true)
                 .doOnSubscribe(subscription -> {
@@ -130,14 +135,12 @@ public class MovieViewModel extends AndroidViewModel {
                             //onComplete
                         }
                 );
-
-        mDisposables.add(d);
     }
 
     @Override
     protected void onCleared() {
         super.onCleared();
-        mDisposables.clear();
-    }
 
+        disposeDisposable();
+    }
 }

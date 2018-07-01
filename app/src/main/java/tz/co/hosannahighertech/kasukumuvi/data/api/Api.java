@@ -1,13 +1,11 @@
 package tz.co.hosannahighertech.kasukumuvi.data.api;
 
-import io.reactivex.Flowable;
-import io.reactivex.Observable;
 import io.reactivex.Single;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
-import tz.co.hosannahighertech.kasukumuvi.data.models.db.Movie;
 import tz.co.hosannahighertech.kasukumuvi.data.models.MovieResponse;
+import tz.co.hosannahighertech.kasukumuvi.data.models.db.Movie;
 
 /**
  * @package tz.co.hosannahighertech.kasukumuvi.data.api
@@ -18,11 +16,11 @@ import tz.co.hosannahighertech.kasukumuvi.data.models.MovieResponse;
  */
 
 public interface Api {
-    @GET("/3/movie/popular")
-    Single<MovieResponse> getPopular();
+    @GET("/3/movie/top_rated?include_adult=false")
+    Single<MovieResponse> getTopRated(@Query("page") int pageNumber);
 
-    @GET("/3/search/movie")
-    Single<MovieResponse> searchMovies(@Query("query") String query);
+    @GET("/3/search/movie?include_adult=false")
+    Single<MovieResponse> searchMovies(@Query("query") String query, @Query("page") int pageNumber);
 
     @GET("/3/movie/{movie_id}")
     Single<Movie> getMovie(@Path("movie_id") int id);

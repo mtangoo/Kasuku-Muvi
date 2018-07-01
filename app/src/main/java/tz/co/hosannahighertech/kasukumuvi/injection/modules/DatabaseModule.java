@@ -6,8 +6,11 @@ import javax.inject.Inject;
 
 import dagger.Module;
 import dagger.Provides;
+import tz.co.hosannahighertech.kasukumuvi.data.api.Api;
 import tz.co.hosannahighertech.kasukumuvi.data.models.db.DatabaseManager;
 import tz.co.hosannahighertech.kasukumuvi.data.models.db.MovieDao;
+import tz.co.hosannahighertech.kasukumuvi.data.repos.ListBoundaryCallback;
+import tz.co.hosannahighertech.kasukumuvi.data.repos.SearchBoundaryCallback;
 
 /**
  * @package tz.co.hosannahighertech.kasukumuvi.injection.modules
@@ -27,8 +30,17 @@ public class DatabaseModule {
     }
 
     @Provides
-    MovieDao provideMovieDao()
-    {
+    MovieDao provideMovieDao() {
         return mDatabase.movieDao();
+    }
+
+    @Provides
+    ListBoundaryCallback provideListBoundaryCallback(MovieDao local, Api remote) {
+        return new ListBoundaryCallback(local, remote);
+    }
+
+    @Provides
+    SearchBoundaryCallback provideSearchBoundaryCallback(MovieDao local, Api remote) {
+        return new SearchBoundaryCallback(local, remote);
     }
 }
