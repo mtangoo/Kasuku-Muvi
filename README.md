@@ -1,4 +1,4 @@
-ndroid Achitecture Components Presented as Simple Movie App
+Android Achitecture Components Presented as Simple Movie App
 LiveData, Dagger2, RxJava2, Pagination, et al - Packed together as sample movie listing app
 
 ## Using application
